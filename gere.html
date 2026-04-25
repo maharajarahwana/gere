@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Gere</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>gere</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ujian EPS-TOPIK - 18 Soal</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --success: #27ae60;
+            --warning: #f1c40f;
+            --danger: #e74c3c;
+            --light: #f4f7f6;
+            --active-border: #8e44ad; /* Warna Ungu */
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--light);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        #quiz-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        #main-container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+
+        @media (max-width: 800px) {
+            #main-container { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+        }
+
+        #timer { font-size: 1.5rem; font-weight: bold; color: var(--danger); }
+
+        .question-text { font-size: 1.2rem; margin-bottom: 20px; line-height: 1.6; }
+
+        .options-container { display: grid; gap: 10px; }
+
+        .option {
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background 0.2s;
+        }
+
+        .option.selected { background-color: #e1f5fe; border-color: var(--accent); }
+        .correct-ans { border-color: var(--accent) !important; background-color: #e1f5fe !important; font-weight: bold; }
+        .wrong-ans { border-color: var(--danger) !important; background-color: #fdeaea !important; color: var(--danger); }
+
+        /* Navigation Grid */
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .nav-item {
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        /* Border Ungu Tebal untuk nomor yang sedang dikerjakan */
+        .nav-item.active { 
+            border: 4px solid var(--active-border) !important; 
+            transform: scale(1.05);
+            z-index: 2;
+        }
+
+        .nav-item.filled { background-color: #d1d8e0; }
+        
+        /* Nav colors after submit */
+        .nav-correct { background-color: var(--accent) !important; color: white; border-color: var(--accent); }
+        .nav-wrong { background-color: var(--warning) !important; color: black; border-color: var(--warning); }
+
+        .controls { display: flex; justify-content: space-between; margin-top: 20px; }
+        
+        button {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-prev { background: #95a5a6; color: white; }
+        .btn-next { background: var(--accent); color: white; }
+        .btn-submit { background: var(--success); color: white; width: 100%; margin-top: 10px; font-size: 1.1rem; }
+        button:disabled { opacity: 0.3; }
+
+        u { text-underline-offset: 4px; text-decoration-thickness: 2px; }
+    </style>
+</head>
+<body>
+
+<div id="quiz-wrapper">
+    <div class="card" style="text-align: center;">
+        <div id="timer">20:00</div>
+    </div>
+
+    <div id="main-container">
+        <div class="card">
+            <div class="header">
+                <span id="q-label" style="font-weight:bold; color:var(--primary);">Soal</span>
+            </div>
+            <div id="q-text" class="question-text"></div>
+            <div id="options-box" class="options-container"></div>
+            
+            <div class="controls">
+                <button class="btn-prev" id="prev-btn" onclick="move(-1)">Sebelumnya</button>
+                <button class="btn-next" id="next-btn" onclick="move(1)">Berikutnya</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-top:0; font-size: 1rem;">Navigasi Soal</h3>
+            <div class="nav-grid" id="nav-grid"></div>
+            <button class="btn-submit" id="submit-btn" onclick="finish()">SUBMIT</button>
+            <div id="result-box" style="margin-top: 15px; font-weight: bold; text-align: center;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const rawData = [
+{ q: "먹고 남은 우유가 있으면 버리지 말고 김치를 만들 때 조금 넣어 보십시오. 김치 색깔이 더 예뻐지고 오랫동안 신선한 김치를 먹을 수 있습니다. ______ 우유로 구두나 가구를 닦으면 깨끗하게 닦을 수 있고 가구와 구두가 빛이 납니다. 몸에 좋은 우유를 생활에도 활용해 보십시오.", a: ["그러면", "그리고", "그러나", "그래서"], c: 1 },
+{ q: "저는 보통 퇴근 후에 집에서 저녁을 먹고 밤 11시까지 한국어를 공부합니다. ______ 오늘은 피곤해서 일찍 자려고 합니다.", a: ["그리고", "그러면", "그래서", "그런데"], c: 3 },
+{ q: "발목을 삐었을 때는 많이 걷지 말고 앉아서 쉬어야 합니다. ______ 찜질을 해 주는 것이 좋습니다.", a: ["그러나", "그리고", "그래서", "그러면"], c: 1 },
+{ q: "민수 씨는 냄비 만드는 곳에서 일을 합니다. ______ 민수 씨는 이 일을 시작한 지 얼마 안 됐기 때문에 기계를 어떻게 작동하는지 모릅니다. ______ 물건을 옮기는 일을 하고 있습니다. ______ 곧 기계를 작동하는 방법을 배워서 냄비를 만드는 일을 할 겁니다.", a: ["그래서, 그런데, 그렇지만", "그런데, 그래서, 그렇지만", "그리고, 그런데, 그렇지만", "그러면, 그런데, 그렇지만"], c: 1 },
+{ q: "저는 오늘 아침에 집안을 깨끗이 청소했습니다. ______ 시장에 가서 고기와 야채를 샀습니다. 점심 때 불고기를 만들려고 합니다. 오늘 저녁에 고향 친구들을 집으로 초대했기 때문입니다. 친구들과 오랜만에 재미있게 놀았습니다.", a: ["그래서", "그런데", "그리고", "그러면"], c: 2 },
+{ q: "안녕하세요. 제 이름은 두루지입니다. 저는 작년에 한국에 왔습니다. 지금은 학교에서 배우고 있습니다. 저는 음식을 만드는 것을 아주 좋아합니다. ______ 한국말을 배운 후에는 한국에서 몽골 음식을 파는 식당을 하고 싶습니다.", a: ["그래서", "그런데", "그리고", "그러면"], c: 0 },
+{ q: "어제 밤부터 머리가 아프고 열이 많이 났습니다. ______ 저는 오늘 병원에 갔습니다. 병원에서는 아픈 사람을 만났습니다. 의사 선생님이 나에게 “감기입니다.”라고 말했습니다. 저는 병원에서 주사를 맞고 약국에서 약을 사 가지고 집으로 돌아왔습니다. 약을 먹고 일찍 자려고 합니다.", a: ["그래서", "그런데", "그리고", "그러면"], c: 0 },
+{ q: "한국말에는 높임말과 반말이 있습니다. 나이가 많은 사람한테는 높임말을 써야 합니다. ______ 한국 사람한테는 다른 사람의 나이를 아는 것이 아주 중요합니다.", a: ["그래서", "그렇지만", "그리고", "그러면"], c: 0 },
+{ q: "처음 만난 사람한테도 보통 높임말을 써야 합니다. ______ 길을 물을 때나 공공기관 등에서도 높임말을 써야 합니다. 반말은 나보다 나이가 적은 사람한테 씁니다. ______ 나이가 많아도 친한 사람한테나 형제한테는 반말을 써도 괜찮습니다.", a: ["그래서, 그리고", "그래서, 그렇지만", "그리고, 그럼", "그러면, 그러니까"], c: 1 },
+{ q: "저는 카필입니다. 저는 안산에 있는 타일 공장에서 일합니다. 한국에 오기 전에는 네팔에서 히말라야 산길을 안내해 주는 \"세르파\"로 일했습니다. 저는 산을 아주 좋아하는데, 지금 제가 살고 있는 인천에 높은 산이 없습니다. ______ 고향의 히말라야 산이 그립습니다.", a: ["그래서", "그렇지만", "그럼", "그러면"], c: 0 },
+{ q: "전화를 걸 때는 몇 가지 조심해야 할 것이 있습니다. 먼저 너무 이른 시간이나 밤늦은 시간에 전화하는 것은 좋지 않습니다. ______ 식사하는 시간에도 연락을 피해야 합니다. 또 자신보다 나이가 많거나 직위가 높은 사람에게 전화를 걸 때에는 먼저 자신의 누구인지 이야기하는 것이 좋습니다. 그 후에 전화를 건 이유를 말합니다. 통화를끝낼 때에도 윗사람이 전화를 끊기 전에 먼저 전화를 끊으면 안 됩니다.", a: ["근데", "그래서", "그러면", "그리고"], c: 3 },
+{ q: "극장에 사람이 많았어요. ______ 우리는 그냥 돌아왔어요.", a: ["그래도", "그래서", "그러면", "그러니까"], c: 0 },
+{ q: "전화를 걸었습니다. ______ 아무도 안 받습니다.", a: ["그러나", "그래서", "그러면", "그러니까"], c: 0 },
+{ q: "내가 친절하게 했어요. ______ 그들도 나에게 친절했어요.", a: ["그러나", "그럼", "그러면", "그러니까"], c: 3 },
+{ q: "우리가 건물 앞에서 곧 사진을 찍을 거예요. ______ 빨리 나오세요.", a: ["그러나", "그럼", "그러면", "그러니까"], c: 3 },
+{ q: "피곤할 때 잠깐 자세요. ______ 피곤이 좀 풀리는 것 같아요.", a: ["그러니", "근데", "그러면", "그러니까"], c: 2 },
+{ q: "가: 사장님이 지금 통화 중이십니다.<br>나: ______ 조금 이따가 다시 전화할게요.", a: ["그러니", "근데", "그러면", "그러니까"], c: 2 },
+{ q: "외국인 근로자들은 직장에서 한국인과 공동 작업을 할 수 있어야 합니다. ______ 한국어 실력이 중급은 되어야겠지요.", a: ["그러나", "근데", "그렇지만", "그러므로"], c: 3 }
+];
+
+    let questions = [];
+    let userAnswers = new Array(rawData.length).fill(null);
+    let currentIdx = 0;
+    let isSubmitted = false;
+    let timerValue = 20 * 60;
+
+    function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    function init() {
+        questions = shuffle([...rawData]).map(item => {
+            const options = item.a.map((txt, i) => ({ text: txt, correct: i === item.c }));
+            return { q: item.q, options: shuffle(options) };
+        });
+        
+        renderNav();
+        renderQuestion();
+        startTimer();
+    }
+
+    function renderNav() {
+        const nav = document.getElementById('nav-grid');
+        nav.innerHTML = '';
+        questions.forEach((_, i) => {
+            const item = document.createElement('div');
+            item.className = 'nav-item';
+            item.innerText = i + 1;
+            
+            if (i === currentIdx) item.classList.add('active');
+            if (userAnswers[i] !== null) item.classList.add('filled');
+            
+            if (isSubmitted) {
+                const isCorrect = userAnswers[i] !== null && questions[i].options[userAnswers[i]].correct;
+                item.classList.add(isCorrect ? 'nav-correct' : 'nav-wrong');
+            }
+
+            item.onclick = () => { currentIdx = i; renderQuestion(); renderNav(); };
+            nav.appendChild(item);
+        });
+    }
+
+    function renderQuestion() {
+        const q = questions[currentIdx];
+        document.getElementById('q-label').innerText = `Soal Nomor ${currentIdx + 1}`;
+        const isImage = q.q.includes('.jpg');
+
+if (isImage) {
+    document.getElementById('q-text').innerHTML =
+        `<img src="assets/img/${q.q}" style="max-width:100%; border-radius:10px;">`;
+} else {
+    document.getElementById('q-text').innerHTML = q.q;
+}
+        const box = document.getElementById('options-box');
+        box.innerHTML = '';
+
+        q.options.forEach((opt, i) => {
+            const div = document.createElement('div');
+            div.className = 'option';
+            if (userAnswers[currentIdx] === i) div.classList.add('selected');
+
+            if (isSubmitted) {
+                if (opt.correct) div.classList.add('correct-ans');
+                else if (userAnswers[currentIdx] === i) div.classList.add('wrong-ans');
+            } else {
+                div.onclick = () => { 
+                    userAnswers[currentIdx] = i; 
+                    renderQuestion(); 
+                    renderNav();
+                };
+            }
+
+            const symbols = ['①', '②', '③', '④'];
+            div.innerHTML = `${symbols[i]} ${opt.text}`;
+            box.appendChild(div);
+        });
+
+        document.getElementById('prev-btn').disabled = (currentIdx === 0);
+        document.getElementById('next-btn').disabled = (currentIdx === rawData.length - 1);
+    }
+
+    function move(step) {
+        currentIdx += step;
+        renderQuestion();
+        renderNav();
+    }
+
+    function startTimer() {
+        const timerEl = document.getElementById('timer');
+        const interval = setInterval(() => {
+            if (isSubmitted) { clearInterval(interval); return; }
+            let m = Math.floor(timerValue / 60);
+            let s = timerValue % 60;
+            timerEl.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+            if (timerValue <= 0) { clearInterval(interval); finish(); }
+            timerValue--;
+        }, 1000);
+    }
+
+    function finish() {
+        if (isSubmitted) return;
+        if (timerValue > 0 && !confirm("Apakah Anda yakin ingin mensubmit semua jawaban?")) return;
+
+        isSubmitted = true;
+        let correctCount = 0;
+        questions.forEach((q, idx) => {
+            if (userAnswers[idx] !== null && q.options[userAnswers[idx]].correct) correctCount++;
+        });
+
+        const percent = ((correctCount / rawData.length) * 100).toFixed(1);
+        
+        document.getElementById('result-box').innerHTML = `
+            <div style="color:var(--primary); font-size:1.2rem;">Skor Akhir:</div>
+            <div style="font-size:2rem; color:var(--success);">${correctCount} / 18</div>
+            <div style="font-size:1.5rem;">(${percent}%)</div>
+        `;
+
+        document.getElementById('submit-btn').disabled = true;
+        renderQuestion();
+        renderNav();
+    }
+
+    init();
+</script>
+</body>
+</html>
+    
+  </body>
+  
+</html>
