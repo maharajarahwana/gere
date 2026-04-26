@@ -25,7 +25,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ujian EPS-TOPIK - 18 Soal</title>
+    <title>Ujian EPS-TOPIK - 25 Soal</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -155,7 +155,7 @@
 
 <div id="quiz-wrapper">
     <div class="card" style="text-align: center;">
-        <div id="timer">20:00</div>
+        <div id="timer">30:00</div>
     </div>
 
     <div id="main-container">
@@ -200,14 +200,21 @@
 { q: "우리가 건물 앞에서 곧 사진을 찍을 거예요. ______ 빨리 나오세요.", a: ["그러나", "그럼", "그러면", "그러니까"], c: 3 },
 { q: "피곤할 때 잠깐 자세요. ______ 피곤이 좀 풀리는 것 같아요.", a: ["그러나", "근데", "그러면", "그러니까"], c: 2 },
 { q: "가: 사장님이 지금 통화 중이십니다.<br>나: ______ 조금 이따가 다시 전화할게요.", a: ["그러나", "근데", "그러면", "그러니까"], c: 2 },
-{ q: "외국인 근로자들은 직장에서 한국인과 공동 작업을 할 수 있어야 합니다. ______ 한국어 실력이 중급은 되어야겠지요.", a: ["그러나", "근데", "그렇지만", "그러므로"], c: 3 }
+{ q: "외국인 근로자들은 직장에서 한국인과 공동 작업을 할 수 있어야 합니다. ______ 한국어 실력이 중급은 되어야겠지요.", a: ["그러나", "근데", "그렇지만", "그러므로"], c: 3 },
+{ q: "선생님이 방법을 자세히 설명해 주셨습니다. ______ 하면 문제를 쉽게 풀 수 있어요.", a: ["그래도", "그렇게", "그러면", "그래서"], c: 1 },
+{ q: "가: 지금 시간이 없어요. 내일 만날까요?<br>나: ______ 내일 만나요.", a: ["그로부터", "그렇게", "그럼", "그래도"], c: 2 },
+{ q: "날씨가 많이 춥다고 ______, 이렇게 따뜻하네요.", a: ["그래서", "그러면", "그러니께", "그러는데"], c: 3 },
+{ q: "2016년에 이 회사에 들어왔습니다. ______ 10년이 지났습니다.", a: ["그래서", "그럼", "그로부터", "그러면"], c: 2 },
+{ q: "가: 이 식당은 30년 전통이에요.<br>나: 아, ______. 정말 유명하겠네요.", a: ["그래도", "그렇군요", "그로부터", "그러면"], c: 1 },
+{ q: "가: 나 오늘 시험에 합격했어.<br>나: 아, ______! 정말 축하해.", a: ["그러니께", "그렇구나", "그러는데", "그로부터"], c: 1 },
+{ q: "가: 이 문제는 좀 어렵지?<br>나: 응, ______.", a: ["그래도", "그렇지", "그래서", "그러면"], c: 1 },
 ];
 
     let questions = [];
     let userAnswers = new Array(rawData.length).fill(null);
     let currentIdx = 0;
     let isSubmitted = false;
-    let timerValue = 20 * 60;
+    let timerValue = 30 * 60;
 
     function shuffle(arr) {
         for (let i = arr.length - 1; i > 0; i--) {
@@ -320,7 +327,7 @@ if (isImage) {
         
         document.getElementById('result-box').innerHTML = `
             <div style="color:var(--primary); font-size:1.2rem;">Skor Akhir:</div>
-            <div style="font-size:2rem; color:var(--success);">${correctCount} / 18</div>
+            <div style="font-size:2rem; color:var(--success);">${correctCount} / 25</div>
             <div style="font-size:1.5rem;">(${percent}%)</div>
         `;
 
